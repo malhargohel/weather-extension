@@ -1,7 +1,6 @@
 # Weather Dashboard Extension
 
-![Extension Screenshot](https://i.imgur.com/8F3d3f9.png) 
-*Note: The screenshot is a representation of the extension's design.*
+![Extension Screenshot](image.png) 
 
 A modern and visually appealing browser extension that provides the current weather and a 5-day forecast based on your current location. The interface features a clean, centered layout with a vibrant gradient background and "glassmorphism" effects for a premium user experience.
 
