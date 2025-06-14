@@ -10,6 +10,7 @@ A modern and visually appealing browser extension that provides the current weat
 * **Current Weather Details:** Displays a comprehensive summary of the current conditions, including:
     * City and Country
     * Current Date
+    * Search Funcion
     * An icon representing the weather (e.g., sunny, rainy, cloudy)
     * Temperature in Celsius
     * "Feels like" temperature
