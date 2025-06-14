@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- API Configuration ---
     // IMPORTANT: Replace with your OpenWeatherMap API key
-    const apiKey = '67cc12742121280228988d04fc6f199d';
+    const apiKey = 'YOUR_API';
 
     // --- DOM Elements ---
     const citySearchInput = document.getElementById('city-search');
