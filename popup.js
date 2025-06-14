@@ -5,8 +5,29 @@ document.addEventListener('DOMContentLoaded', function () {
     const apiKey = '67cc12742121280228988d04fc6f199d';
 
     // --- DOM Elements ---
+    const citySearchInput = document.getElementById('city-search');
+    const searchButton = document.getElementById('search-button');
     const weatherDisplay = document.getElementById('weather-display');
     const forecastContainer = document.getElementById('forecast-container');
+
+    // --- Event Listeners ---
+    searchButton.addEventListener('click', handleSearch);
+    citySearchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    });
+
+    /**
+     * Handles the search action.
+     */
+    function handleSearch() {
+        const city = citySearchInput.value.trim();
+        if (city) {
+            fetchWeatherByCity(city);
+            citySearchInput.value = ''; // Clear input after search
+        }
+    }
 
     /**
      * Get user's location and fetch weather data.
@@ -16,40 +37,42 @@ document.addEventListener('DOMContentLoaded', function () {
             navigator.geolocation.getCurrentPosition(
                 position => {
                     const { latitude, longitude } = position.coords;
-                    fetchWeather(latitude, longitude);
+                    fetchWeatherByCoords(latitude, longitude);
                 },
                 (error) => {
                     console.error('Geolocation Error:', error);
-                    weatherDisplay.innerHTML = `<p>Location permission denied. <br> Please enable it to see the weather.</p>`;
-                    // Fallback to a default city if location is denied
-                    // fetchWeatherByCity('Sydney'); 
+                    weatherDisplay.innerHTML = `<p>Location permission denied. <br> Search for a city to begin.</p>`;
+                    weatherDisplay.classList.remove('loading');
                 }
             );
         } else {
-            weatherDisplay.innerHTML = `<p>Geolocation is not supported by your browser.</p>`;
+            weatherDisplay.innerHTML = `<p>Geolocation is not supported. Please search for a city.</p>`;
+            weatherDisplay.classList.remove('loading');
         }
     }
 
     /**
-     * Fetches weather and forecast data from the API.
-     * @param {number} lat - The latitude.
-     * @param {number} lon - The longitude.
+     * Generic fetch function to avoid code duplication.
+     * @param {string} weatherUrl - The URL for the current weather API call.
+     * @param {string} forecastUrl - The URL for the forecast API call.
      */
-    async function fetchWeather(lat, lon) {
+    async function fetchWeatherData(weatherUrl, forecastUrl) {
         weatherDisplay.innerHTML = `<p>Loading weather...</p>`;
         weatherDisplay.classList.add('loading');
+        forecastContainer.innerHTML = '';
 
         try {
-            const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
-            const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
-
             const [weatherResponse, forecastResponse] = await Promise.all([
                 fetch(weatherUrl),
                 fetch(forecastUrl)
             ]);
 
-            if (!weatherResponse.ok || !forecastResponse.ok) {
-                throw new Error('Failed to fetch weather data.');
+            if (!weatherResponse.ok) {
+                const errorData = await weatherResponse.json();
+                throw new Error(errorData.message || 'City not found');
+            }
+            if (!forecastResponse.ok) {
+                 throw new Error('Forecast data not available');
             }
 
             const weatherData = await weatherResponse.json();
@@ -60,8 +83,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
         } catch (error) {
             console.error('API Fetch Error:', error);
-            weatherDisplay.innerHTML = `<p>Could not fetch weather data. Please try again later.</p>`;
+            weatherDisplay.innerHTML = `<p>Could not find weather data. <br> Please check the city name.</p>`;
+            weatherDisplay.classList.remove('loading');
         }
+    }
+
+    /**
+     * Fetches weather data by geographic coordinates.
+     */
+    function fetchWeatherByCoords(lat, lon) {
+        const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+        const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+        fetchWeatherData(weatherUrl, forecastUrl);
+    }
+
+    /**
+     * Fetches weather data by city name.
+     */
+    function fetchWeatherByCity(city) {
+        const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+        const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
+        fetchWeatherData(weatherUrl, forecastUrl);
     }
 
     /**
@@ -70,8 +112,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function displayCurrentWeather(data) {
         weatherDisplay.classList.remove('loading');
         const { name, main, weather, wind, sys } = data;
-
-        // **THIS IS THE FIX FOR THE IMAGE** - We build the full URL from the API response.
         const iconUrl = `https://openweathermap.org/img/wn/${weather[0].icon}@4x.png`;
 
         weatherDisplay.innerHTML = `
@@ -101,14 +141,12 @@ document.addEventListener('DOMContentLoaded', function () {
      * Displays the 5-day forecast in the new, styled format.
      */
     function displayForecast(data) {
-        forecastContainer.innerHTML = ''; // Clear previous forecast
+        forecastContainer.innerHTML = '';
         const dailyForecasts = data.list.filter(item => item.dt_txt.includes("12:00:00"));
 
         dailyForecasts.forEach(day => {
             const date = new Date(day.dt * 1000);
             const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-
-            // **IMAGE FIX FOR FORECAST** - Again, we use the full URL from the API.
             const iconUrl = `https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
 
             const forecastItemHTML = `
