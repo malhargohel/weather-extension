@@ -1,0 +1,125 @@
+/* General body styling */
+body {
+    width: 350px; /* A good width for a browser extension popup */
+    font-family: 'Inter', sans-serif;
+    color: white;
+    margin: 0;
+    /* Vibrant gradient background */
+    background: linear-gradient(170deg, #374ABE, #6B75D2);
+    overflow: hidden; /* Prevents scrollbars from appearing briefly */
+}
+
+/* Main container for all content */
+#weather-container {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* This centers everything horizontally */
+    text-align: center;
+}
+
+/* Styling for the main weather display */
+#weather-display {
+    width: 100%;
+}
+
+#weather-display.loading p {
+    font-size: 1.1rem;
+    padding: 40px 0;
+}
+
+/* Text shadow for readability on the gradient */
+#weather-display h1, #weather-display p {
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+#weather-display h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+#weather-display .date {
+    font-size: 0.9rem;
+    font-weight: 400;
+    opacity: 0.8;
+    margin-bottom: 10px;
+}
+
+#weather-display .weather-icon {
+    width: 120px;
+    height: 120px;
+    margin: -10px auto; /* Pulls the icon closer to elements */
+}
+
+#weather-display .temperature {
+    font-size: 4.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+#weather-display .description {
+    font-size: 1.25rem;
+    font-weight: 500;
+    text-transform: capitalize;
+    margin-top: -10px;
+}
+
+/* Container for details like feels like, wind, humidity */
+.details-grid {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    padding-top: 20px;
+}
+
+.detail-item p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.detail-item .value {
+    font-weight: 700;
+}
+
+/* Styling for the 5-day forecast */
+#forecast-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.forecast-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px; /* Space between items inside the card */
+    padding: 10px 5px;
+    border-radius: 12px;
+    
+    /* "Glassmorphism" effect */
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); /* For Safari */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.forecast-item .day {
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.forecast-item .forecast-icon {
+    width: 40px;
+    height: 40px;
+}
+
+.forecast-item .temp {
+    font-weight: 500;
+    font-size: 1rem;
+}
